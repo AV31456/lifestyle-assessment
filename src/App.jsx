@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
+console.log('API Key loaded:', import.meta.env.VITE_GEMINI_API_KEY ? 'Yes' : 'No');
+console.log('API Key starts with:', import.meta.env.VITE_GEMINI_API_KEY?.substring(0, 10));
 const LifestyleMedicineAssessment = () => {
   const [currentStep, setCurrentStep] = useState('consent');
   const [answers, setAnswers] = useState({});
@@ -106,7 +110,7 @@ const LifestyleMedicineAssessment = () => {
     setLoading(true);
     try {
       const KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
-      VITE_GEMINI_API_KEY=AIzaSyBtYY4rtJptit3aDVIbAn79jZdiE-myc6s
+      VITE_GEMINI_API_KEY=AIzaSyBtcD-s8mnp0XdAIwtjOUL7VOjrlguROuY
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${KEY}`;
       const res = await fetch(url, {
         method: 'POST',
