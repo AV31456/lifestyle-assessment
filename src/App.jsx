@@ -106,6 +106,7 @@ const LifestyleMedicineAssessment = () => {
     setLoading(true);
     try {
       const KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
+      VITE_GEMINI_API_KEY=AIzaSyBtYY4rtJptit3aDVIbAn79jZdiE-myc6s
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${KEY}`;
       const res = await fetch(url, {
         method: 'POST',
@@ -220,7 +221,7 @@ const LifestyleMedicineAssessment = () => {
           </div>
         )}
 
-        <div style={{ background: 'white', borderRadius: '24px', padding: 'clamp(1.5rem, 4vw, 3rem)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', minHeight: '500px' }}>
+        <div style={{ background: 'white', borderRadius: '24px', padding: 'clamp(1.5rem, 4vw, 3rem)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', minHeight: '600px' }}>
           
           {currentStep === 'consent' && (
             <div className="fade-in">
@@ -243,11 +244,11 @@ const LifestyleMedicineAssessment = () => {
 
                 <div style={{ marginBottom: '1rem' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#2c2c3e' }}>Gender (for alcohol question)</label>
-                  <select id="userGender" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px', background: 'white' }}>
-                    <option value="">Select...</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other/Prefer not to say</option>
+                  <select id="userGender" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px', background: 'white', color: '#2c2c3e' }}>
+                    <option value="" style={{ color: '#9ca3af' }}>Select...</option>
+                    <option value="male" style={{ color: '#2c2c3e' }}>Male</option>
+                    <option value="female" style={{ color: '#2c2c3e' }}>Female</option>
+                    <option value="other" style={{ color: '#2c2c3e' }}>Other/Prefer not to say</option>
                   </select>
                 </div>
 
@@ -372,12 +373,14 @@ const LifestyleMedicineAssessment = () => {
                             backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath fill='%23667eea' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E\")",
                             backgroundRepeat: 'no-repeat',
                             backgroundPosition: 'right 1rem center',
-                            paddingRight: '3rem'
+                            paddingRight: '3rem',
+                            color: answers[q.id] !== undefined ? '#2c2c3e' : '#9ca3af',
+                            fontWeight: answers[q.id] !== undefined ? '600' : '400'
                           }}
                         >
-                          <option value="">Select days per week...</option>
+                          <option value="" style={{ color: '#9ca3af' }}>Select days per week...</option>
                           {q.options.map((opt, optIdx) => (
-                            <option key={optIdx} value={optIdx}>{opt} days</option>
+                            <option key={optIdx} value={optIdx} style={{ color: '#2c2c3e' }}>{opt} days</option>
                           ))}
                         </select>
                       )}
