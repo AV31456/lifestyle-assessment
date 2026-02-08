@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import React, { useState, useEffect } from 'react';
-import { LineChart, Line, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 console.log('API Key loaded:', import.meta.env.VITE_GEMINI_API_KEY ? 'Yes' : 'No');
 console.log('API Key starts with:', import.meta.env.VITE_GEMINI_API_KEY?.substring(0, 10));
@@ -106,33 +104,35 @@ const LifestyleMedicineAssessment = () => {
     return scoreByCategory;
   };
 
-  const generateRecommendations = async (s) => {
-    setLoading(true);
-    try {
-      const KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
-      VITE_GEMINI_API_KEY=AIzaSyBtcD-s8mnp0XdAIwtjOUL7VOjrlguROuY
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${KEY}`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: "Provide 5 short wellness tips for these wellness scores: " + JSON.stringify(s) + ". Return ONLY a JSON array: [{\"category\": \"string\", \"title\": \"string\", \"action\": \"string\", \"why\": \"string\"}]" }] }]
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error?.message || `HTTP Error ${res.status}`);
-      const rawText = data.candidates[0].content.parts[0].text;
-      const cleaned = rawText.replace(/```json|json|```/gi, "").trim();
-      setRecommendations(JSON.parse(cleaned));
-    } catch (e) {
-      console.error("API Error:", e);
-      setRecommendations([
-        { category: "general", title: "Start Small", action: "Pick one healthy habit to focus on this week.", why: "Small, consistent changes lead to lasting results." },
-        { category: "general", title: "Track Progress", action: "Retake this assessment in 4 weeks.", why: "Monitoring helps maintain motivation." }
-      ]);
+ const generateRecommendations = async (s) => {
+  setLoading(true);
+  try {
+    const KEY = String(import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBtcD-s8mnp0XdAIwtjOUL7VOjrlguROuY').trim();
+    if (!KEY) {
+      throw new Error('No API key');
     }
-    setLoading(false);
-  };
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${KEY}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: "Provide 5 short wellness tips for these wellness scores: " + JSON.stringify(s) + ". Return ONLY a JSON array: [{\"category\": \"string\", \"title\": \"string\", \"action\": \"string\", \"why\": \"string\"}]" }] }]
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `HTTP Error ${res.status}`);
+    const rawText = data.candidates[0].content.parts[0].text;
+    const cleaned = rawText.replace(/```json|json|```/gi, "").trim();
+    setRecommendations(JSON.parse(cleaned));
+  } catch (e) {
+    console.error("API Error:", e);
+    setRecommendations([
+      { category: "general", title: "Start Small", action: "Pick one healthy habit to focus on this week.", why: "Small, consistent changes lead to lasting results." },
+      { category: "general", title: "Track Progress", action: "Retake this assessment in 4 weeks.", why: "Monitoring helps maintain motivation." }
+    ]);
+  }
+  setLoading(false);
+};
 
   const handleAnswer = (questionId, value) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
