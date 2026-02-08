@@ -461,7 +461,6 @@ const LifestyleMedicineAssessment = () => {
         </div>
 
         <div style={{ textAlign: 'center', marginTop: '2rem', color: 'white', fontSize: '0.9rem', opacity: 0.9 }}>
-  <p style={{ margin: '0.5rem 0' }}>Powered by <strong>Teen Lifestyle Medicine</strong></p>
   <p style={{ margin: '1rem 0 0 0', fontSize: '0.85rem', opacity: 0.8 }}>This tool is for educational purposes only and does not provide medical advice</p>
 </div>
       </div>
