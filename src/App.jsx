@@ -10,7 +10,8 @@ const LifestyleMedicineAssessment = () => {
   const [userId] = useState(() => `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
   const [history, setHistory] = useState([]);
   const [showCrisisResources, setShowCrisisResources] = useState(false);
-   const [userInfo, setUserInfo] = useState({ age: '', city: '', state: '' });
+  const [userInfo, setUserInfo] = useState({ age: '', city: '', state: '', gender: '' });
+  
   useEffect(() => {
     const loadHistory = async () => {
       try {
@@ -27,58 +28,49 @@ const LifestyleMedicineAssessment = () => {
 
   const questions = {
     sleep: [
-      { id: 'sleep_hours', question: 'How many hours of sleep do you typically get per night?', type: 'slider', min: 3, max: 12, unit: 'hours', optimal: { min: 8, max: 10 } },
-      { id: 'sleep_consistency', question: 'How consistent is your sleep schedule (going to bed and waking up at similar times)?', type: 'dropdown', options: ['Very inconsistent', 'Somewhat inconsistent', 'Neutral', 'Somewhat consistent', 'Very consistent'] },
-      { id: 'sleep_quality', question: 'How would you rate your overall sleep quality?', type: 'dropdown', options: ['Very poor', 'Poor', 'Fair', 'Good', 'Excellent'] },
-      { id: 'screen_before_bed', question: 'How often do you use screens (phone, TV, computer) within 1 hour before bed?', type: 'dropdown', options: ['Always', 'Usually', 'Sometimes', 'Rarely', 'Never'] }
-    ],
-    nutrition: [
-      { id: 'meal_frequency', question: 'How many balanced meals do you eat per day?', type: 'slider', min: 0, max: 5, unit: 'meals', optimal: { min: 3, max: 3 } },
-     {
-  id: 'fruits',
-  question: 'How many servings of fruit do you eat daily?',
-  type: 'slider',
-  min: 0,
-  max: 8,
-  unit: 'servings',
-  optimal: { min: 2, max: 4 }
-},
-{
-  id: 'vegetables',
-  question: 'How many servings of vegetables do you eat daily?',
-  type: 'slider',
-  min: 0,
-  max: 10,
-  unit: 'servings',
-  optimal: { min: 3, max: 5 }
-},
-      { id: 'water_intake', question: 'How many glasses of water do you drink daily?', type: 'slider', min: 0, max: 15, unit: 'glasses', optimal: { min: 8, max: 10 } },
-      { id: 'processed_foods', question: 'How often do you eat highly processed or fast foods?', type: 'dropdown', options: ['Multiple times daily', 'Once daily', 'Few times weekly', 'Rarely', 'Never'] },
-      { id: 'breakfast', question: 'How often do you eat breakfast?', type: 'dropdown', options: ['Never', 'Rarely', 'Sometimes', 'Usually', 'Every day'] }
-    ],
-    physical_activity: [
-      { id: 'exercise_frequency', question: 'How many days per week do you engage in moderate to vigorous physical activity?', type: 'slider', min: 0, max: 7, unit: 'days', optimal: { min: 5, max: 7 } },
-      { id: 'exercise_duration', question: 'On days you exercise, how many minutes do you typically exercise?', type: 'slider', min: 0, max: 120, unit: 'minutes', optimal: { min: 60, max: 90 } },
-      { id: 'sedentary_time', question: 'How many hours per day do you spend sitting (excluding sleep)?', type: 'slider', min: 0, max: 16, unit: 'hours', optimal: { min: 0, max: 6 } },
-      { id: 'active_transportation', question: 'How often do you walk or bike for transportation?', type: 'dropdown', options: ['Never', 'Rarely', 'Sometimes', 'Usually', 'Always'] }
-    ],
-    stress_management: [
-      { id: 'stress_level', question: 'How would you rate your overall stress level?', type: 'dropdown', options: ['Extremely high', 'High', 'Moderate', 'Low', 'Very low'] },
-      { id: 'stress_coping', question: 'How often do you practice stress management techniques (meditation, deep breathing, journaling)?', type: 'dropdown', options: ['Never', 'Rarely', 'Sometimes', 'Usually', 'Daily'] },
-      { id: 'overwhelmed', question: 'How often do you feel overwhelmed by your responsibilities?', type: 'dropdown', options: ['Always', 'Usually', 'Sometimes', 'Rarely', 'Never'] },
-      { id: 'relaxation_time', question: 'How much time do you dedicate to relaxation or hobbies daily?', type: 'slider', min: 0, max: 5, unit: 'hours', optimal: { min: 1, max: 2 } }
+      { id: 'q1_1', question: 'Are you satisfied with your sleep?', type: 'dropdown', options: ['Never', 'Rarely', 'Sometimes', 'Usually', 'Always'], scores: [0, 1, 2, 3, 4] },
+      { id: 'q1_2', question: 'Do you spend less than 30 minutes awake at night? (This includes the time it takes to fall asleep and awakenings from sleep)', type: 'dropdown', options: ['Never', 'Rarely', 'Sometimes', 'Usually', 'Always'], scores: [0, 1, 2, 3, 4] },
+      { id: 'q1_3', question: 'Do you sleep between 6 and 8 hours per day?', type: 'dropdown', options: ['Never', 'Rarely', 'Sometimes', 'Usually', 'Always'], scores: [0, 1, 2, 3, 4] }
     ],
     social_connections: [
-      { id: 'meaningful_conversations', question: 'How often do you have meaningful conversations with friends or family?', type: 'dropdown', options: ['Never', 'Rarely', 'Sometimes', 'Usually', 'Daily'] },
-      { id: 'social_support', question: 'How supported do you feel by your social network?', type: 'dropdown', options: ['Not at all', 'Slightly', 'Moderately', 'Very', 'Extremely'] },
-      { id: 'social_activities', question: 'How many times per week do you engage in social activities?', type: 'slider', min: 0, max: 15, unit: 'times', optimal: { min: 3, max: 7 } },
-      { id: 'loneliness', question: 'How often do you feel lonely?', type: 'dropdown', options: ['Always', 'Usually', 'Sometimes', 'Rarely', 'Never'] }
+      { id: 'q2_1', question: 'I feel distant from people.', type: 'dropdown', options: ['Strongly Disagree', 'Disagree', 'Mildly Disagree', 'Mildly Agree', 'Agree', 'Strongly Agree'], scores: [5, 4, 3, 2, 1, 0], reversed: true },
+      { id: 'q2_2', question: 'I see myself as a loner.', type: 'dropdown', options: ['Strongly Disagree', 'Disagree', 'Mildly Disagree', 'Mildly Agree', 'Agree', 'Strongly Agree'], scores: [5, 4, 3, 2, 1, 0], reversed: true },
+      { id: 'q2_3', question: "I don't feel related to most people.", type: 'dropdown', options: ['Strongly Disagree', 'Disagree', 'Mildly Disagree', 'Mildly Agree', 'Agree', 'Strongly Agree'], scores: [5, 4, 3, 2, 1, 0], reversed: true },
+      { id: 'q2_4', question: 'I feel like an outsider.', type: 'dropdown', options: ['Strongly Disagree', 'Disagree', 'Mildly Disagree', 'Mildly Agree', 'Agree', 'Strongly Agree'], scores: [5, 4, 3, 2, 1, 0], reversed: true }
     ],
-    screen_time: [
-      { id: 'daily_screen_time', question: 'How many hours per day do you spend on screens for non-school/work purposes?', type: 'slider', min: 0, max: 16, unit: 'hours', optimal: { min: 0, max: 2 } },
-      { id: 'social_media', question: 'How much time do you spend on social media daily?', type: 'slider', min: 0, max: 8, unit: 'hours', optimal: { min: 0, max: 1 } },
-      { id: 'screen_breaks', question: 'How often do you take breaks from screens?', type: 'dropdown', options: ['Never', 'Rarely', 'Sometimes', 'Usually', 'Very frequently'] }
+    stress_management: [
+      { id: 'q3_1', question: 'In the last month, how often have you felt that you were unable to control the important things in your life?', type: 'dropdown', options: ['Never', 'Almost Never', 'Sometimes', 'Fairly Often', 'Very Often'], scores: [4, 3, 2, 1, 0], reversed: true },
+      { id: 'q3_2', question: 'In the last month, how often have you felt confident about your ability to handle your personal problems?', type: 'dropdown', options: ['Never', 'Almost Never', 'Sometimes', 'Fairly Often', 'Very Often'], scores: [0, 1, 2, 3, 4] },
+      { id: 'q3_3', question: 'In the last month, how often have you felt that things were going your way?', type: 'dropdown', options: ['Never', 'Almost Never', 'Sometimes', 'Fairly Often', 'Very Often'], scores: [0, 1, 2, 3, 4] },
+      { id: 'q3_4', question: 'In the last month, how often have you felt difficulties were piling up so high that you could not overcome them?', type: 'dropdown', options: ['Never', 'Almost Never', 'Sometimes', 'Fairly Often', 'Very Often'], scores: [4, 3, 2, 1, 0], reversed: true }
+    ],
+    physical_activity: [
+      { id: 'q4_1', question: 'On a typical week, how much time do you spend in total on moderate and vigorous physical activities where your heartbeat increases and you breathe faster (e.g. brisk walking, cycling, heavy gardening, running)?', subtext: 'Only include activities that lasted at least 10 minutes at a time.', type: 'dropdown', options: ['Less than 1/2 hour (less than 30 min)', '1/2 an hour - 1 1/2 hours (30-90 min)', '1 1/2 - 2 1/2 hours (90-150 min)', '2 1/2 - 5 hours (150-300 min)', 'More than 5 hours (more than 300 min)'], scores: [0, 1, 2, 3, 4] },
+      { id: 'q4_2', question: 'How much of the time that you spend on physical activities in a typical week do you spend in total on vigorous physical activities?', subtext: 'This includes activities that get your heart racing, make you sweat and leave you so short of breath that speaking becomes difficult (e.g. swimming, running, cycling at high speeds). Only include activities that lasted at least 10 minutes at a time.', type: 'dropdown', options: ['Less than 1/2 hour (less than 30 min)', '1/2 an hour - 1 hour (30-60 min)', '1 - 1 1/2 hours (60-90 min)', '1 1/2 - 2 1/2 hours (90-150 min)', 'More than 2 1/2 hours (more than 150 min)'], scores: [0, 1, 2, 3, 4] },
+      { id: 'q4_3', question: 'Do you do muscle-strengthening exercise in a usual week?', type: 'yesno', scores: { yes: 1, no: 0 } },
+      { id: 'q4_4', question: 'How many days, in a usual week, do you do muscle strengthening exercise?', subtext: 'Includes using weight machines, bodyweight exercises, resistance exercises, free weights like dumbbells or resistance bands, and holistic exercises (including yoga, tai-chi, or Pilates)', type: 'days', dependsOn: 'q4_3', dependsOnValue: 'yes', options: ['0', '1', '2', '3', '4', '5', '6', '7'], scores: [0, 0, 1, 1, 1, 1, 1, 1] }
+    ],
+    nutrition: [
+      { id: 'q5_1', question: 'How often do you eat fresh fruits?', subtext: 'Examples: Apples, bananas, pears, oranges, grapes, strawberries, blueberries, etc. Include fresh fruits and frozen fruits with no added sugar.', servingInfo: 'One serving equals: 1 small apple or 1/2 large banana (approximately 1 cup); 1 cup mandarin oranges, melon, or raspberries; 1/4 cup blueberries, 1 1/2 cup whole strawberries', type: 'dropdown', options: ['Less than 1 serving per week', '1-2 servings per week', '3-4 servings per week', '5-6 servings per week', '1 serving per day', '2-3 servings per day', '4 or more servings per day'], scores: [0, 1, 2, 3, 4, 5, 6] },
+      { id: 'q5_2', question: 'How often do you eat vegetables?', subtext: 'Examples: Tomatoes, peppers, cucumbers, broccoli, carrots, green beans, cabbage, spinach, arugula, and other leafy vegetables. Include raw or cooked non-starchy vegetables.', servingInfo: 'One serving equals: 1 cup raw vegetables (e.g. tomatoes, baby carrots, celery, green peas); 1/2 cup cooked vegetables (such as broccoli and spinach); 1 cup arugula', type: 'dropdown', options: ['Less than 3 servings per week', '3-4 servings per week', '5-6 servings per week', '1 serving per day', '2-3 servings per day', '4 or more servings per day'], scores: [0, 1, 2, 3, 4, 5] },
+      { id: 'q5_3', question: 'How often do you eat legumes, nuts, and seeds?', subtext: 'Legumes - cooked or canned beans, lentils, chickpeas or peas; miso, tofu, tempeh, hummus. Nuts - almonds, walnuts, hazelnuts, peanuts, etc. Seeds - sesame, sunflower, pumpkin, flax seeds, etc.', servingInfo: 'One serving equals: 1/2 cup of cooked or canned legumes; 1/3 hummus or bean dip; 1/2 cup tofu; 1/4 cup tempeh; a small handful of nuts or seeds', type: 'dropdown', options: ['Less than 1 serving per week', '1-2 servings per week', '3-4 servings per week', '5-6 servings per week', '1 serving per day', '2 or more servings per day'], scores: [0, 1, 2, 3, 4, 5] },
+      { id: 'q5_4', question: 'How often do you eat whole grains?', subtext: 'Examples: Whole grain bread, whole grain bread roll, muesli, unsweetened ready to eat cereal, cooked grits/porridge, brown rice, whole grain pasta, corn tortilla.', servingInfo: 'One serving equals: 1 slice of whole grain bread; 1/2 cup cooked cereal (oats, oatmeal, quinoa); 1/2 cup cooked brown rice or whole grain pasta; 1 small corn tortilla; 1/2 cup cooked grits; 1 cup ready-to-eat-cereal flakes', type: 'dropdown', options: ['I do not eat it at all', 'Less than 1 serving per week', '1-2 servings per week', '3-4 servings per week', '5-6 servings per week', '1 serving per day', '2 or more servings per day'], scores: [0, 1, 2, 3, 4, 5, 6] }
+    ],
+    substance_use: [
+      { id: 'q6_1', question: 'How often have you used any tobacco product?', subtext: 'For example, cigarettes, e-cigarettes, cigars, pipes, or smokeless tobacco.', type: 'dropdown', options: ['Daily or Almost Daily', 'Weekly', 'Monthly', 'Less than Monthly', 'Never'], scores: [0, 1, 2, 3, 4] },
+      { id: 'q6_2', question: 'How often have you had 5 or more drinks containing alcohol in one day?', subtext: '1 standard drink is about 1 small glass of wine (5 oz), 1 beer (12 oz), or 1 single shot of liquor. Note: This question adjusts to 4+ drinks for females.', type: 'dropdown', options: ['Daily or Almost Daily', 'Weekly', 'Monthly', 'Less than Monthly', 'Never'], scores: [0, 1, 2, 3, 4], genderSpecific: true },
+      { id: 'q6_3', question: 'How often have you used any drugs including marijuana, cocaine or crack, heroin, methamphetamine (crystal meth), hallucinogens, ecstasy/MDMA?', type: 'dropdown', options: ['Daily or Almost Daily', 'Weekly', 'Monthly', 'Less than Monthly', 'Never'], scores: [0, 1, 2, 3, 4] },
+      { id: 'q6_4', question: 'How often have you used any prescription medications just for the feeling, more than prescribed, or that were not prescribed for you?', subtext: 'Prescription medications that may be used in this way include: Opiate pain relievers (for example, OxyContin, Vicodin, Percocet, methadone). Medications for anxiety or sleeping (for example, Xanax, Ativan, Klonopin). Medications for ADHD (for example, Adderall or Ritalin)', type: 'dropdown', options: ['Daily or Almost Daily', 'Weekly', 'Monthly', 'Less than Monthly', 'Never'], scores: [0, 1, 2, 3, 4] }
     ]
+  };
+
+  const maxScores = {
+    sleep: 12,
+    social_connections: 20,
+    stress_management: 16,
+    physical_activity: 10,
+    nutrition: 22,
+    substance_use: 16
   };
 
   const calculateScores = (answers) => {
@@ -86,44 +78,27 @@ const LifestyleMedicineAssessment = () => {
     Object.keys(questions).forEach(category => {
       const categoryQuestions = questions[category];
       let totalScore = 0;
-      let questionCount = 0;
+      
       categoryQuestions.forEach(q => {
         const answer = answers[q.id];
-        if (answer !== undefined && answer >= 0) {
-          let score = 0;
-          if (q.type === 'slider') {
-            if (q.optimal) {
-              const value = answer;
-              if (q.id === 'sedentary_time' || q.id === 'daily_screen_time' || q.id === 'social_media') {
-                const maxBad = q.max;
-                const maxGood = q.optimal.max;
-                score = value <= maxGood ? 10 : Math.max(0, 10 - ((value - maxGood) / (maxBad - maxGood)) * 10);
-              } else {
-                if (value >= q.optimal.min && value <= q.optimal.max) {
-                  score = 10;
-                } else if (value < q.optimal.min) {
-                  score = (value / q.optimal.min) * 10;
-                } else {
-                  score = Math.max(0, 10 - ((value - q.optimal.max) / (q.max - q.optimal.max)) * 5);
-                }
-              }
+        if (answer !== undefined && answer !== null && answer !== '') {
+          if (q.type === 'yesno') {
+            totalScore += q.scores[answer];
+          } else if (q.type === 'days') {
+            if (answers[q.dependsOn] === 'yes') {
+              totalScore += q.scores[answer];
             }
-          } else if (q.type === 'dropdown') {
-            const index = answer;
-            const optionsCount = q.options.length;
-            const lowerIsBetter = q.id.includes('processed') || q.id.includes('stress_level') || q.id.includes('overwhelmed') || q.id.includes('loneliness') || q.id.includes('screen_before_bed');
-            if (lowerIsBetter) {
-              score = ((optionsCount - 1 - index) / (optionsCount - 1)) * 10;
-            } else {
-              score = (index / (optionsCount - 1)) * 10;
-            }
+          } else {
+            totalScore += q.scores[answer];
           }
-          totalScore += score;
-          questionCount++;
         }
       });
-      scoreByCategory[category] = questionCount > 0 ? totalScore / questionCount : 0;
+      
+      const maxScore = maxScores[category];
+      const normalizedScore = (totalScore / maxScore) * 10;
+      scoreByCategory[category] = normalizedScore;
     });
+    
     return scoreByCategory;
   };
 
@@ -158,37 +133,37 @@ const LifestyleMedicineAssessment = () => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
- const handleSubmit = async () => {
-  const calculatedScores = calculateScores(answers);
-  setScores(calculatedScores);
-  generateRecommendations(calculatedScores);
-  setCurrentStep('results');
-  
-  // Track submission to Google Sheets
-  const overallScore = Object.values(calculatedScores).reduce((a, b) => a + b, 0) / Object.keys(calculatedScores).length;
-  try {
-    await fetch('https://api.sheetbest.com/sheets/a99766d4-2760-4aaa-9610-31c98d7c09bf', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        Timestamp: new Date().toLocaleString(),
-        Age: userInfo.age,
-        City: userInfo.city,
-        State: userInfo.state,
-        'Sleep Score': calculatedScores.sleep?.toFixed(1) || '0',
-        'Nutrition Score': calculatedScores.nutrition?.toFixed(1) || '0',
-        'Physical Activity Score': calculatedScores.physical_activity?.toFixed(1) || '0',
-        'Stress Management Score': calculatedScores.stress_management?.toFixed(1) || '0',
-        'Social Connections Score': calculatedScores.social_connections?.toFixed(1) || '0',
-        'Screen Time Score': calculatedScores.screen_time?.toFixed(1) || '0',
-        'Overall Score': overallScore.toFixed(1),
-        'Feedback Rating': ''
-      })
-    });
-  } catch (e) {
-    console.log('Failed to track submission:', e);
-  }
-};
+  const handleSubmit = async () => {
+    const calculatedScores = calculateScores(answers);
+    setScores(calculatedScores);
+    generateRecommendations(calculatedScores);
+    setCurrentStep('results');
+    
+    const overallScore = Object.values(calculatedScores).reduce((a, b) => a + b, 0) / Object.keys(calculatedScores).length;
+    try {
+      await fetch('https://api.sheetbest.com/sheets/a99766d4-2760-4aaa-9610-31c98d7c09bf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Timestamp: new Date().toLocaleString(),
+          Age: userInfo.age,
+          City: userInfo.city,
+          State: userInfo.state,
+          Gender: userInfo.gender,
+          'Sleep Score': calculatedScores.sleep?.toFixed(1) || '0',
+          'Nutrition Score': calculatedScores.nutrition?.toFixed(1) || '0',
+          'Physical Activity Score': calculatedScores.physical_activity?.toFixed(1) || '0',
+          'Stress Management Score': calculatedScores.stress_management?.toFixed(1) || '0',
+          'Social Connections Score': calculatedScores.social_connections?.toFixed(1) || '0',
+          'Substance Use Score': calculatedScores.substance_use?.toFixed(1) || '0',
+          'Overall Score': overallScore.toFixed(1),
+          'Feedback Rating': ''
+        })
+      });
+    } catch (e) {
+      console.log('Failed to track submission:', e);
+    }
+  };
 
   const restartAssessment = () => {
     setCurrentStep('consent');
@@ -205,6 +180,9 @@ const LifestyleMedicineAssessment = () => {
 
   const currentQuestions = getCurrentQuestions();
   const allQuestionsAnswered = currentQuestions.every(q => {
+    if (q.dependsOn && answers[q.dependsOn] !== q.dependsOnValue) {
+      return true;
+    }
     const ans = answers[q.id];
     return ans !== undefined && ans !== -1 && ans !== '';
   });
@@ -245,116 +223,77 @@ const LifestyleMedicineAssessment = () => {
         <div style={{ background: 'white', borderRadius: '24px', padding: 'clamp(1.5rem, 4vw, 3rem)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', minHeight: '500px' }}>
           
           {currentStep === 'consent' && (
-  <div className="fade-in">
-    <h2 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '1.5rem', color: '#1a1a2e' }}>Before We Begin</h2>
-    
-    <div style={{ background: '#fff4e6', border: '2px solid #ff9800', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
-      <h3 style={{ fontSize: '1.2rem', fontWeight: '700', margin: '0 0 1rem 0', color: '#e65100' }}>⚠️ Important Disclaimer</h3>
-      <p style={{ margin: '0 0 0.75rem 0', lineHeight: '1.6', color: '#2c2c3e' }}>This tool provides <strong>general educational information</strong> about healthy lifestyle habits based on evidence-based guidelines from the American College of Lifestyle Medicine.</p>
-      <p style={{ margin: '0 0 0.75rem 0', lineHeight: '1.6', color: '#2c2c3e' }}>This is <strong>NOT medical advice</strong> and does NOT diagnose, treat, or prevent any disease. Always consult with a healthcare provider before making changes to your health routine, especially if you have existing medical conditions.</p>
-      <p style={{ margin: '0', lineHeight: '1.6', color: '#2c2c3e' }}>Your responses are stored anonymously for progress tracking only and are never shared with third parties.</p>
-    </div>
+            <div className="fade-in">
+              <h2 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '1.5rem', color: '#1a1a2e' }}>Before We Begin</h2>
+              
+              <div style={{ background: '#fff4e6', border: '2px solid #ff9800', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', margin: '0 0 1rem 0', color: '#e65100' }}>⚠️ Important Disclaimer</h3>
+                <p style={{ margin: '0 0 0.75rem 0', lineHeight: '1.6', color: '#2c2c3e' }}>This tool provides <strong>general educational information</strong> about healthy lifestyle habits based on evidence-based guidelines from the American College of Lifestyle Medicine.</p>
+                <p style={{ margin: '0 0 0.75rem 0', lineHeight: '1.6', color: '#2c2c3e' }}>This is <strong>NOT medical advice</strong> and does NOT diagnose, treat, or prevent any disease. Always consult with a healthcare provider before making changes to your health routine, especially if you have existing medical conditions.</p>
+                <p style={{ margin: '0', lineHeight: '1.6', color: '#2c2c3e' }}>Your responses are stored anonymously for progress tracking only and are never shared with third parties.</p>
+              </div>
 
-    <div style={{ background: '#f0f4ff', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
-      <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: '0 0 0.75rem 0', color: '#1a1a2e' }}>Your Information</h3>
-      
-      <div style={{ marginBottom: '1rem' }}>
-        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#2c2c3e' }}>Age *</label>
-        <input type="number" id="userAge" min="13" max="120" placeholder="Enter your age" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px' }} />
-      </div>
+              <div style={{ background: '#f0f4ff', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: '0 0 0.75rem 0', color: '#1a1a2e' }}>Your Information</h3>
+                
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#2c2c3e' }}>Age *</label>
+                  <input type="number" id="userAge" min="13" max="120" placeholder="Enter your age" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px' }} />
+                </div>
 
-      <div style={{ marginBottom: '1rem' }}>
-        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#2c2c3e' }}>City</label>
-        <input type="text" id="userCity" placeholder="Enter your city" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px' }} />
-      </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#2c2c3e' }}>Gender (for alcohol question)</label>
+                  <select id="userGender" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px', background: 'white' }}>
+                    <option value="">Select...</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other/Prefer not to say</option>
+                  </select>
+                </div>
 
-      <div style={{ marginBottom: '1rem' }}>
-        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#2c2c3e' }}>State</label>
-        <input type="text" id="userState" placeholder="Enter your state" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px' }} />
-      </div>
-      
-      <label style={{ display: 'flex', alignItems: 'flex-start', cursor: 'pointer', gap: '0.75rem' }}>
-        <input type="checkbox" id="ageConfirm" style={{ width: '20px', height: '20px', marginTop: '2px', cursor: 'pointer', accentColor: '#667eea' }} />
-        <span style={{ lineHeight: '1.6', color: '#2c2c3e' }}>I confirm that I am 13 years of age or older. If I am under 18, I will discuss my results with a parent or guardian.</span>
-      </label>
-    </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#2c2c3e' }}>City</label>
+                  <input type="text" id="userCity" placeholder="Enter your city" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px' }} />
+                </div>
 
-    <div style={{ background: '#e8f5e9', borderRadius: '12px', padding: '1.5rem', marginBottom: '2rem' }}>
-      <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: '0 0 0.75rem 0', color: '#1a1a2e' }}>What to Expect</h3>
-      <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '1.8', color: '#2c2c3e' }}>
-        <li>6 categories covering all pillars of lifestyle medicine</li>
-        <li>Approximately 5 minutes to complete</li>
-        <li>Personalized recommendations based on your responses</li>
-        <li>Visual dashboard showing your wellness profile</li>
-      </ul>
-    </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#2c2c3e' }}>State</label>
+                  <input type="text" id="userState" placeholder="Enter your state" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px' }} />
+                </div>
+                
+                <label style={{ display: 'flex', alignItems: 'flex-start', cursor: 'pointer', gap: '0.75rem' }}>
+                  <input type="checkbox" id="ageConfirm" style={{ width: '20px', height: '20px', marginTop: '2px', cursor: 'pointer', accentColor: '#667eea' }} />
+                  <span style={{ lineHeight: '1.6', color: '#2c2c3e' }}>I confirm that I am 13 years of age or older. If I am under 18, I will discuss my results with a parent or guardian.</span>
+                </label>
+              </div>
 
-   <button onClick={() => { 
-  const checkbox = document.getElementById('ageConfirm'); 
-  const age = document.getElementById('userAge').value;
-  const city = document.getElementById('userCity').value || 'Not provided';
-  const state = document.getElementById('userState').value || 'Not provided';
-  if (checkbox && checkbox.checked && age >= 13) {
-    setUserInfo({ age, city, state });
-    setCurrentStep('sleep'); 
-  } else if (!age || age < 13) {
-    alert('Please enter a valid age (13 or older).');
-  } else {
-    alert('Please confirm you are 13 or older to continue.'); 
-  }
-}} style={{ width: '100%', padding: '1rem 2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: '700', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)' }} onMouseEnter={(e) => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)'; }} onMouseLeave={(e) => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)'; }}>Start Assessment</button>
-  </div>
-)}
-{currentStep === 'feedback' && (
-  <div className="fade-in">
-    <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '0.5rem', color: '#1a1a2e' }}>One More Thing!</h2>
-    <p style={{ fontSize: '1rem', color: '#666', marginBottom: '2rem' }}>Before we show your results, please rate your experience</p>
-    
-    <div style={{ background: '#f0f4ff', borderRadius: '16px', padding: '2rem', marginBottom: '2rem', border: '2px solid #667eea' }}>
-      <h3 style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '1rem', color: '#1a1a2e', textAlign: 'center' }}>How helpful was this assessment?</h3>
-      <p style={{ marginBottom: '1.5rem', color: '#666', textAlign: 'center' }}>Rate from 1 (not helpful) to 10 (extremely helpful)</p>
-      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '2rem' }}>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
-          <button 
-            key={num}
-            onClick={async () => {
-              try {
-                await fetch('https://api.sheetbest.com/sheets/a99766d4-2760-4aaa-9610-31c98d7c09bf', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    Timestamp: new Date().toLocaleString(),
-                    Type: 'Feedback',
-                    'Feedback Rating': num
-                  })
-                });
-              } catch (e) {
-                console.log('Failed to track feedback');
-              }
-              setCurrentStep('results');
-            }}
-            style={{ 
-              padding: '1rem', 
-              background: num <= 4 ? '#f44336' : num <= 7 ? '#ff9800' : '#4caf50',
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '8px', 
-              fontSize: '1.2rem', 
-              fontWeight: '700', 
-              cursor: 'pointer',
-              minWidth: '60px',
-              transition: 'transform 0.2s'
-            }}
-            onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
-            onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-          >
-            {num}
-          </button>
-        ))}
-      </div>
-    </div>
-  </div>
-)}
+              <div style={{ background: '#e8f5e9', borderRadius: '12px', padding: '1.5rem', marginBottom: '2rem' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: '0 0 0.75rem 0', color: '#1a1a2e' }}>What to Expect</h3>
+                <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '1.8', color: '#2c2c3e' }}>
+                  <li>6 categories covering all pillars of lifestyle medicine</li>
+                  <li>Approximately 10-15 minutes to complete</li>
+                  <li>Personalized recommendations based on your responses</li>
+                  <li>Visual dashboard showing your wellness profile</li>
+                </ul>
+              </div>
+
+              <button onClick={() => { 
+                const checkbox = document.getElementById('ageConfirm'); 
+                const age = document.getElementById('userAge').value;
+                const gender = document.getElementById('userGender').value || 'other';
+                const city = document.getElementById('userCity').value || 'Not provided';
+                const state = document.getElementById('userState').value || 'Not provided';
+                if (checkbox && checkbox.checked && age >= 13) {
+                  setUserInfo({ age, city, state, gender });
+                  setCurrentStep('sleep'); 
+                } else if (!age || age < 13) {
+                  alert('Please enter a valid age (13 or older).');
+                } else {
+                  alert('Please confirm you are 13 or older to continue.'); 
+                }
+              }} style={{ width: '100%', padding: '1rem 2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: '700', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)' }} onMouseEnter={(e) => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)'; }} onMouseLeave={(e) => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)'; }}>Start Assessment</button>
+            </div>
+          )}
 
           {currentStep !== 'consent' && currentStep !== 'results' && (
             <div className="fade-in">
@@ -363,29 +302,97 @@ const LifestyleMedicineAssessment = () => {
                 <span style={{ fontFamily: '"Space Mono", monospace', fontSize: '0.9rem', color: '#667eea', fontWeight: '700' }}>{currentStepIndex + 1} / {categorySteps.length}</span>
               </div>
               <div style={{ marginBottom: '2rem' }}>
-                {currentQuestions.map((q, idx) => (
-                  <div key={q.id} className="slide-in" style={{ marginBottom: '2.5rem', animationDelay: `${idx * 0.1}s` }}>
-                    <label style={{ display: 'block', fontSize: '1.1rem', fontWeight: '600', marginBottom: '1rem', color: '#2c2c3e', lineHeight: '1.4' }}>{q.question}</label>
-                    {q.type === 'slider' && (
-                      <div>
-                        <input type="range" min={q.min} max={q.max} value={answers[q.id] !== undefined ? answers[q.id] : q.min} onChange={(e) => handleAnswer(q.id, parseFloat(e.target.value))} style={{ marginBottom: '0.5rem' }} />
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', color: '#666' }}>
-                          <span>{q.min} {q.unit}</span>
-                          <span style={{ fontWeight: '700', fontSize: '1.2rem', color: '#667eea' }}>{answers[q.id] !== undefined ? answers[q.id] : q.min} {q.unit}</span>
-                          <span>{q.max} {q.unit}</span>
+                {currentQuestions.map((q, idx) => {
+                  if (q.dependsOn && answers[q.dependsOn] !== q.dependsOnValue) {
+                    return null;
+                  }
+
+                  let displayQuestion = q.question;
+                  if (q.genderSpecific && userInfo.gender === 'female') {
+                    displayQuestion = 'How often have you had 4 or more drinks containing alcohol in one day?';
+                  }
+
+                  return (
+                    <div key={q.id} className="slide-in" style={{ marginBottom: '2.5rem', animationDelay: `${idx * 0.1}s` }}>
+                      <label style={{ display: 'block', fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.5rem', color: '#2c2c3e', lineHeight: '1.4' }}>{displayQuestion}</label>
+                      
+                      {q.subtext && (
+                        <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '0.75rem', fontStyle: 'italic' }}>
+                          {q.subtext}
                         </div>
-                      </div>
-                    )}
-                    {q.type === 'dropdown' && (
-                      <select value={answers[q.id] !== undefined ? answers[q.id] : '-1'} onChange={(e) => { const val = parseInt(e.target.value); if (val >= 0) handleAnswer(q.id, val); }} style={{ width: '100%', padding: '1rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '10px', background: 'white', cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit', appearance: 'none', backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath fill='%23667eea' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', paddingRight: '3rem', color: answers[q.id] !== undefined && answers[q.id] >= 0 ? '#2c2c3e' : '#9ca3af', fontWeight: answers[q.id] !== undefined && answers[q.id] >= 0 ? '600' : '400' }}>
-                        <option value="-1" disabled>Select an option...</option>
-                        {q.options.map((option, optIdx) => (
-                          <option key={optIdx} value={optIdx}>{option}</option>
-                        ))}
-                      </select>
-                    )}
-                  </div>
-                ))}
+                      )}
+                      
+                      {q.servingInfo && (
+                        <div style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1rem', padding: '0.5rem', background: '#f0f4ff', borderRadius: '6px' }}>
+                          <strong>Serving size:</strong> {q.servingInfo}
+                        </div>
+                      )}
+
+                      {q.type === 'yesno' && (
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                          {['yes', 'no'].map((option) => (
+                            <button
+                              key={option}
+                              onClick={() => handleAnswer(q.id, option)}
+                              style={{
+                                flex: 1,
+                                padding: '1rem',
+                                background: answers[q.id] === option ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : 'white',
+                                color: answers[q.id] === option ? 'white' : '#2c2c3e',
+                                border: `2px solid ${answers[q.id] === option ? '#667eea' : '#e0e0e0'}`,
+                                borderRadius: '8px',
+                                fontSize: '1rem',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                textTransform: 'capitalize'
+                              }}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {q.type === 'days' && (
+                        <select
+                          value={answers[q.id] !== undefined ? answers[q.id] : ''}
+                          onChange={(e) => handleAnswer(q.id, parseInt(e.target.value))}
+                          style={{
+                            width: '100%',
+                            padding: '1rem',
+                            fontSize: '1rem',
+                            border: '2px solid #e0e0e0',
+                            borderRadius: '10px',
+                            background: 'white',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            fontFamily: 'inherit',
+                            appearance: 'none',
+                            backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath fill='%23667eea' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E\")",
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'right 1rem center',
+                            paddingRight: '3rem'
+                          }}
+                        >
+                          <option value="">Select days per week...</option>
+                          {q.options.map((opt, optIdx) => (
+                            <option key={optIdx} value={optIdx}>{opt} days</option>
+                          ))}
+                        </select>
+                      )}
+
+                      {q.type === 'dropdown' && (
+                        <select value={answers[q.id] !== undefined ? answers[q.id] : '-1'} onChange={(e) => { const val = parseInt(e.target.value); if (val >= 0) handleAnswer(q.id, val); }} style={{ width: '100%', padding: '1rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '10px', background: 'white', cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit', appearance: 'none', backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath fill='%23667eea' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem center', paddingRight: '3rem', color: answers[q.id] !== undefined && answers[q.id] >= 0 ? '#2c2c3e' : '#9ca3af', fontWeight: answers[q.id] !== undefined && answers[q.id] >= 0 ? '600' : '400' }}>
+                          <option value="-1" disabled>Select an option...</option>
+                          {q.options.map((option, optIdx) => (
+                            <option key={optIdx} value={optIdx}>{option}</option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'space-between' }}>
                 {currentStepIndex > 0 && (
@@ -450,18 +457,18 @@ const LifestyleMedicineAssessment = () => {
                 <button onClick={restartAssessment} style={{ padding: '1rem 2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '1rem', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s', flex: '1', minWidth: '200px' }} onMouseEnter={(e) => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)'; }} onMouseLeave={(e) => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = 'none'; }}>Take Assessment Again</button>
               </div>
               <div style={{ background: '#f0f4ff', borderRadius: '16px', padding: '2rem', marginTop: '2rem', border: '2px solid #667eea' }}>
-  <h3 style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '1rem', color: '#1a1a2e' }}>Was this assessment helpful?</h3>
-  <p style={{ marginBottom: '1.5rem', color: '#666' }}>Your feedback helps us improve the tool for other teens!</p>
-  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-  </div>
-</div>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '1rem', color: '#1a1a2e' }}>Was this assessment helpful?</h3>
+                <p style={{ marginBottom: '1.5rem', color: '#666' }}>Your feedback helps us improve the tool!</p>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                </div>
+              </div>
             </div>
           )}
         </div>
 
-       <div style={{ textAlign: 'center', marginTop: '2rem', color: 'white', fontSize: '0.9rem', opacity: 0.9 }}>
-  <p style={{ margin: '1rem 0 0 0', fontSize: '0.85rem', opacity: 0.8 }}>This tool is for educational purposes only and does not provide medical advice</p>
-</div>
+        <div style={{ textAlign: 'center', marginTop: '2rem', color: 'white', fontSize: '0.9rem', opacity: 0.9 }}>
+          <p style={{ margin: '1rem 0 0 0', fontSize: '0.85rem', opacity: 0.8 }}>This tool is for educational purposes only and does not provide medical advice</p>
+        </div>
       </div>
     </div>
   );
