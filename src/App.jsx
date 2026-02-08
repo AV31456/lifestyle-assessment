@@ -283,10 +283,9 @@ const LifestyleMedicineAssessment = () => {
       <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: '0 0 0.75rem 0', color: '#1a1a2e' }}>What to Expect</h3>
       <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '1.8', color: '#2c2c3e' }}>
         <li>6 categories covering all pillars of lifestyle medicine</li>
-        <li>Approximately 10 minutes to complete</li>
+        <li>Approximately 5 minutes to complete</li>
         <li>Personalized recommendations based on your responses</li>
         <li>Visual dashboard showing your wellness profile</li>
-        <li>Ability to track progress over time</li>
       </ul>
     </div>
 
