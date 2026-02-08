@@ -250,7 +250,7 @@ const LifestyleMedicineAssessment = () => {
     
     <div style={{ background: '#fff4e6', border: '2px solid #ff9800', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
       <h3 style={{ fontSize: '1.2rem', fontWeight: '700', margin: '0 0 1rem 0', color: '#e65100' }}>⚠️ Important Disclaimer</h3>
-      <p style={{ margin: '0 0 0.75rem 0', lineHeight: '1.6', color: '#2c2c3e' }}>This tool provides <strong>general educational information</strong> about healthy lifestyle habits based on evidence-based guidelines from the American College of Lifestyle Medicine and Stanford Lifestyle Medicine.</p>
+      <p style={{ margin: '0 0 0.75rem 0', lineHeight: '1.6', color: '#2c2c3e' }}>This tool provides <strong>general educational information</strong> about healthy lifestyle habits based on evidence-based guidelines from the American College of Lifestyle Medicine.</p>
       <p style={{ margin: '0 0 0.75rem 0', lineHeight: '1.6', color: '#2c2c3e' }}>This is <strong>NOT medical advice</strong> and does NOT diagnose, treat, or prevent any disease. Always consult with a healthcare provider before making changes to your health routine, especially if you have existing medical conditions.</p>
       <p style={{ margin: '0', lineHeight: '1.6', color: '#2c2c3e' }}>Your responses are stored anonymously for progress tracking only and are never shared with third parties.</p>
     </div>
@@ -460,7 +460,7 @@ const LifestyleMedicineAssessment = () => {
           )}
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: '2rem', color: 'white', fontSize: '0.9rem', opacity: 0.9 }}>
+       <div style={{ textAlign: 'center', marginTop: '2rem', color: 'white', fontSize: '0.9rem', opacity: 0.9 }}>
   <p style={{ margin: '1rem 0 0 0', fontSize: '0.85rem', opacity: 0.8 }}>This tool is for educational purposes only and does not provide medical advice</p>
 </div>
       </div>
