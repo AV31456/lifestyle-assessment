@@ -10,7 +10,7 @@ const LifestyleMedicineAssessment = () => {
   const [userId] = useState(() => `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
   const [history, setHistory] = useState([]);
   const [showCrisisResources, setShowCrisisResources] = useState(false);
-
+   const [userInfo, setUserInfo] = useState({ age: '', city: '', state: '' });
   useEffect(() => {
     const loadHistory = async () => {
       try {
@@ -34,7 +34,24 @@ const LifestyleMedicineAssessment = () => {
     ],
     nutrition: [
       { id: 'meal_frequency', question: 'How many balanced meals do you eat per day?', type: 'slider', min: 0, max: 5, unit: 'meals', optimal: { min: 3, max: 3 } },
-      { id: 'fruits_vegetables', question: 'How many servings of fruits and vegetables do you eat daily?', type: 'slider', min: 0, max: 10, unit: 'servings', optimal: { min: 5, max: 9 } },
+     {
+  id: 'fruits',
+  question: 'How many servings of fruit do you eat daily?',
+  type: 'slider',
+  min: 0,
+  max: 8,
+  unit: 'servings',
+  optimal: { min: 2, max: 4 }
+},
+{
+  id: 'vegetables',
+  question: 'How many servings of vegetables do you eat daily?',
+  type: 'slider',
+  min: 0,
+  max: 10,
+  unit: 'servings',
+  optimal: { min: 3, max: 5 }
+},
       { id: 'water_intake', question: 'How many glasses of water do you drink daily?', type: 'slider', min: 0, max: 15, unit: 'glasses', optimal: { min: 8, max: 10 } },
       { id: 'processed_foods', question: 'How often do you eat highly processed or fast foods?', type: 'dropdown', options: ['Multiple times daily', 'Once daily', 'Few times weekly', 'Rarely', 'Never'] },
       { id: 'breakfast', question: 'How often do you eat breakfast?', type: 'dropdown', options: ['Never', 'Rarely', 'Sometimes', 'Usually', 'Every day'] }
@@ -141,12 +158,37 @@ const LifestyleMedicineAssessment = () => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
   };
 
-  const handleSubmit = () => {
-    const calculatedScores = calculateScores(answers);
-    setScores(calculatedScores);
-    generateRecommendations(calculatedScores);
-    setCurrentStep('results');
-  };
+ const handleSubmit = async () => {
+  const calculatedScores = calculateScores(answers);
+  setScores(calculatedScores);
+  generateRecommendations(calculatedScores);
+  setCurrentStep('results');
+  
+  // Track submission to Google Sheets
+  const overallScore = Object.values(calculatedScores).reduce((a, b) => a + b, 0) / Object.keys(calculatedScores).length;
+  try {
+    await fetch('https://api.sheetbest.com/sheets/a99766d4-2760-4aaa-9610-31c98d7c09bf', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        Timestamp: new Date().toLocaleString(),
+        Age: userInfo.age,
+        City: userInfo.city,
+        State: userInfo.state,
+        'Sleep Score': calculatedScores.sleep?.toFixed(1) || '0',
+        'Nutrition Score': calculatedScores.nutrition?.toFixed(1) || '0',
+        'Physical Activity Score': calculatedScores.physical_activity?.toFixed(1) || '0',
+        'Stress Management Score': calculatedScores.stress_management?.toFixed(1) || '0',
+        'Social Connections Score': calculatedScores.social_connections?.toFixed(1) || '0',
+        'Screen Time Score': calculatedScores.screen_time?.toFixed(1) || '0',
+        'Overall Score': overallScore.toFixed(1),
+        'Feedback Rating': ''
+      })
+    });
+  } catch (e) {
+    console.log('Failed to track submission:', e);
+  }
+};
 
   const restartAssessment = () => {
     setCurrentStep('consent');
@@ -188,7 +230,7 @@ const LifestyleMedicineAssessment = () => {
         input[type="range"]::-moz-range-thumb:hover { transform: scale(1.2); }
       `}</style>
 
-      <div style={{ maxWidth: '100%', margin: '0 auto', padding: '0 1rem' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1rem' }}>
         <div className="fade-in" style={{ textAlign: 'center', marginBottom: '2rem', color: 'white' }}>
           <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: '800', margin: '0 0 0.5rem 0', letterSpacing: '-0.02em' }}>Lifestyle Medicine Assessment</h1>
           <p style={{ fontSize: '1.1rem', opacity: 0.95, maxWidth: '600px', margin: '0 auto', fontWeight: '400' }}>Discover your wellness baseline and get personalized recommendations</p>
@@ -203,34 +245,117 @@ const LifestyleMedicineAssessment = () => {
         <div style={{ background: 'white', borderRadius: '24px', padding: 'clamp(1.5rem, 4vw, 3rem)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', minHeight: '500px' }}>
           
           {currentStep === 'consent' && (
-            <div className="fade-in">
-              <h2 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '1.5rem', color: '#1a1a2e' }}>Before We Begin</h2>
-              <div style={{ background: '#fff4e6', border: '2px solid #ff9800', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', margin: '0 0 1rem 0', color: '#e65100' }}>⚠️ Important Disclaimer</h3>
-                <p style={{ margin: '0 0 0.75rem 0', lineHeight: '1.6' }}>This tool provides <strong>general educational information</strong> about healthy lifestyle habits based on evidence-based guidelines from the American College of Lifestyle Medicine and Stanford Lifestyle Medicine.</p>
-                <p style={{ margin: '0 0 0.75rem 0', lineHeight: '1.6' }}>This is <strong>NOT medical advice</strong> and does NOT diagnose, treat, or prevent any disease. Always consult with a healthcare provider before making changes to your health routine, especially if you have existing medical conditions.</p>
-                <p style={{ margin: '0', lineHeight: '1.6' }}>Your responses are stored anonymously for progress tracking only and are never shared with third parties.</p>
-              </div>
-              <div style={{ background: '#f0f4ff', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: '0 0 0.75rem 0', color: '#1a1a2e' }}>Age Confirmation</h3>
-                <label style={{ display: 'flex', alignItems: 'flex-start', cursor: 'pointer', gap: '0.75rem' }}>
-                  <input type="checkbox" id="ageConfirm" style={{ width: '20px', height: '20px', marginTop: '2px', cursor: 'pointer', accentColor: '#667eea' }} />
-                  <span style={{ lineHeight: '1.6' }}>I confirm that I am 13 years of age or older. If I am under 18, I will discuss my results with a parent or guardian.</span>
-                </label>
-              </div>
-              <div style={{ background: '#e8f5e9', borderRadius: '12px', padding: '1.5rem', marginBottom: '2rem' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: '0 0 0.75rem 0', color: '#1a1a2e' }}>What to Expect</h3>
-                <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '1.8' }}>
-                  <li>6 categories covering all pillars of lifestyle medicine</li>
-                  <li>Approximately 10 minutes to complete</li>
-                  <li>Personalized recommendations based on your responses</li>
-                  <li>Visual dashboard showing your wellness profile</li>
-                  <li>Ability to track progress over time</li>
-                </ul>
-              </div>
-              <button onClick={() => { const checkbox = document.getElementById('ageConfirm'); if (checkbox && checkbox.checked) { setCurrentStep('sleep'); } else { alert('Please confirm you are 13 or older to continue.'); }}} style={{ width: '100%', padding: '1rem 2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: '700', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)' }} onMouseEnter={(e) => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)'; }} onMouseLeave={(e) => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)'; }}>Start Assessment</button>
-            </div>
-          )}
+  <div className="fade-in">
+    <h2 style={{ fontSize: '1.8rem', fontWeight: '700', marginBottom: '1.5rem', color: '#1a1a2e' }}>Before We Begin</h2>
+    
+    <div style={{ background: '#fff4e6', border: '2px solid #ff9800', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
+      <h3 style={{ fontSize: '1.2rem', fontWeight: '700', margin: '0 0 1rem 0', color: '#e65100' }}>⚠️ Important Disclaimer</h3>
+      <p style={{ margin: '0 0 0.75rem 0', lineHeight: '1.6', color: '#2c2c3e' }}>This tool provides <strong>general educational information</strong> about healthy lifestyle habits based on evidence-based guidelines from the American College of Lifestyle Medicine and Stanford Lifestyle Medicine.</p>
+      <p style={{ margin: '0 0 0.75rem 0', lineHeight: '1.6', color: '#2c2c3e' }}>This is <strong>NOT medical advice</strong> and does NOT diagnose, treat, or prevent any disease. Always consult with a healthcare provider before making changes to your health routine, especially if you have existing medical conditions.</p>
+      <p style={{ margin: '0', lineHeight: '1.6', color: '#2c2c3e' }}>Your responses are stored anonymously for progress tracking only and are never shared with third parties.</p>
+    </div>
+
+    <div style={{ background: '#f0f4ff', borderRadius: '12px', padding: '1.5rem', marginBottom: '1.5rem' }}>
+      <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: '0 0 0.75rem 0', color: '#1a1a2e' }}>Your Information</h3>
+      
+      <div style={{ marginBottom: '1rem' }}>
+        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#2c2c3e' }}>Age *</label>
+        <input type="number" id="userAge" min="13" max="120" placeholder="Enter your age" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px' }} />
+      </div>
+
+      <div style={{ marginBottom: '1rem' }}>
+        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#2c2c3e' }}>City</label>
+        <input type="text" id="userCity" placeholder="Enter your city" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px' }} />
+      </div>
+
+      <div style={{ marginBottom: '1rem' }}>
+        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600', color: '#2c2c3e' }}>State</label>
+        <input type="text" id="userState" placeholder="Enter your state" style={{ width: '100%', padding: '0.75rem', fontSize: '1rem', border: '2px solid #e0e0e0', borderRadius: '8px' }} />
+      </div>
+      
+      <label style={{ display: 'flex', alignItems: 'flex-start', cursor: 'pointer', gap: '0.75rem' }}>
+        <input type="checkbox" id="ageConfirm" style={{ width: '20px', height: '20px', marginTop: '2px', cursor: 'pointer', accentColor: '#667eea' }} />
+        <span style={{ lineHeight: '1.6', color: '#2c2c3e' }}>I confirm that I am 13 years of age or older. If I am under 18, I will discuss my results with a parent or guardian.</span>
+      </label>
+    </div>
+
+    <div style={{ background: '#e8f5e9', borderRadius: '12px', padding: '1.5rem', marginBottom: '2rem' }}>
+      <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: '0 0 0.75rem 0', color: '#1a1a2e' }}>What to Expect</h3>
+      <ul style={{ margin: 0, paddingLeft: '1.25rem', lineHeight: '1.8', color: '#2c2c3e' }}>
+        <li>6 categories covering all pillars of lifestyle medicine</li>
+        <li>Approximately 10 minutes to complete</li>
+        <li>Personalized recommendations based on your responses</li>
+        <li>Visual dashboard showing your wellness profile</li>
+        <li>Ability to track progress over time</li>
+      </ul>
+    </div>
+
+   <button onClick={() => { 
+  const checkbox = document.getElementById('ageConfirm'); 
+  const age = document.getElementById('userAge').value;
+  const city = document.getElementById('userCity').value || 'Not provided';
+  const state = document.getElementById('userState').value || 'Not provided';
+  if (checkbox && checkbox.checked && age >= 13) {
+    setUserInfo({ age, city, state });
+    setCurrentStep('sleep'); 
+  } else if (!age || age < 13) {
+    alert('Please enter a valid age (13 or older).');
+  } else {
+    alert('Please confirm you are 13 or older to continue.'); 
+  }
+}} style={{ width: '100%', padding: '1rem 2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '1.1rem', fontWeight: '700', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s', boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)' }} onMouseEnter={(e) => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)'; }} onMouseLeave={(e) => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)'; }}>Start Assessment</button>
+  </div>
+)}
+{currentStep === 'feedback' && (
+  <div className="fade-in">
+    <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '0.5rem', color: '#1a1a2e' }}>One More Thing!</h2>
+    <p style={{ fontSize: '1rem', color: '#666', marginBottom: '2rem' }}>Before we show your results, please rate your experience</p>
+    
+    <div style={{ background: '#f0f4ff', borderRadius: '16px', padding: '2rem', marginBottom: '2rem', border: '2px solid #667eea' }}>
+      <h3 style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '1rem', color: '#1a1a2e', textAlign: 'center' }}>How helpful was this assessment?</h3>
+      <p style={{ marginBottom: '1.5rem', color: '#666', textAlign: 'center' }}>Rate from 1 (not helpful) to 10 (extremely helpful)</p>
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '2rem' }}>
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+          <button 
+            key={num}
+            onClick={async () => {
+              try {
+                await fetch('https://api.sheetbest.com/sheets/a99766d4-2760-4aaa-9610-31c98d7c09bf', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    Timestamp: new Date().toLocaleString(),
+                    Type: 'Feedback',
+                    'Feedback Rating': num
+                  })
+                });
+              } catch (e) {
+                console.log('Failed to track feedback');
+              }
+              setCurrentStep('results');
+            }}
+            style={{ 
+              padding: '1rem', 
+              background: num <= 4 ? '#f44336' : num <= 7 ? '#ff9800' : '#4caf50',
+              color: 'white', 
+              border: 'none', 
+              borderRadius: '8px', 
+              fontSize: '1.2rem', 
+              fontWeight: '700', 
+              cursor: 'pointer',
+              minWidth: '60px',
+              transition: 'transform 0.2s'
+            }}
+            onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
+            onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+          >
+            {num}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
 
           {currentStep !== 'consent' && currentStep !== 'results' && (
             <div className="fade-in">
@@ -325,6 +450,12 @@ const LifestyleMedicineAssessment = () => {
               <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', flexWrap: 'wrap' }}>
                 <button onClick={restartAssessment} style={{ padding: '1rem 2rem', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', border: 'none', borderRadius: '12px', fontSize: '1rem', fontWeight: '700', cursor: 'pointer', transition: 'all 0.2s', flex: '1', minWidth: '200px' }} onMouseEnter={(e) => { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)'; }} onMouseLeave={(e) => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = 'none'; }}>Take Assessment Again</button>
               </div>
+              <div style={{ background: '#f0f4ff', borderRadius: '16px', padding: '2rem', marginTop: '2rem', border: '2px solid #667eea' }}>
+  <h3 style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '1rem', color: '#1a1a2e' }}>Was this assessment helpful?</h3>
+  <p style={{ marginBottom: '1.5rem', color: '#666' }}>Your feedback helps us improve the tool for other teens!</p>
+  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+  </div>
+</div>
             </div>
           )}
         </div>
