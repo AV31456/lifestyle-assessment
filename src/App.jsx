@@ -208,7 +208,7 @@ const LifestyleMedicineAssessment = () => {
         input[type="range"]::-moz-range-thumb:hover { transform: scale(1.2); }
       `}</style>
 
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1rem' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div className="fade-in" style={{ textAlign: 'center', marginBottom: '2rem', color: 'white' }}>
           <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: '800', margin: '0 0 0.5rem 0', letterSpacing: '-0.02em' }}>Lifestyle Medicine Assessment</h1>
           <p style={{ fontSize: '1.1rem', opacity: 0.95, maxWidth: '600px', margin: '0 auto', fontWeight: '400' }}>Discover your wellness baseline and get personalized recommendations</p>
@@ -220,7 +220,7 @@ const LifestyleMedicineAssessment = () => {
           </div>
         )}
 
-        <div style={{ background: 'white', borderRadius: '24px', padding: 'clamp(1.5rem, 4vw, 3rem)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', minHeight: '600px' }}>
+        <div style={{ background: 'white', borderRadius: '24px', padding: 'clamp(1.5rem, 4vw, 3rem)', boxShadow: '0 20px 60px rgba(0,0,0,0.3)', minHeight: '600px', flex: 1 }}>
           
           {currentStep === 'consent' && (
             <div className="fade-in">
