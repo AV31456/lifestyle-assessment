@@ -107,7 +107,7 @@ const LifestyleMedicineAssessment = () => {
  const generateRecommendations = async (s) => {
   setLoading(true);
   try {
-    const KEY = String(import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBtcD-s8mnp0XdAIwtjOUL7VOjrlguROuY').trim();
+    const KEY = String(import.meta.env.VITE_GEMINI_API_KEY || '').trim();
     if (!KEY) {
       throw new Error('No API key');
     }
