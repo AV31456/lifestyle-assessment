@@ -192,7 +192,7 @@ const LifestyleMedicineAssessment = () => {
   const progress = currentStep === 'results' ? 100 : currentStep === 'consent' ? 0 : ((currentStepIndex + 1) / categorySteps.length) * 100;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontFamily: '"Epilogue", system-ui, sans-serif', padding: '2rem 1rem', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', width: '100vw', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontFamily: '"Epilogue", system-ui, sans-serif', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, left: 0, overflowY: 'auto' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
         * { box-sizing: border-box; }
@@ -208,7 +208,7 @@ const LifestyleMedicineAssessment = () => {
         input[type="range"]::-moz-range-thumb:hover { transform: scale(1.2); }
       `}</style>
 
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ width: '100%', margin: '0 auto', padding: '0 1rem', flex: 1, display: 'flex', flexDirection: 'column', maxWidth: '1400px' }}>
         <div className="fade-in" style={{ textAlign: 'center', marginBottom: '2rem', color: 'white' }}>
           <h1 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: '800', margin: '0 0 0.5rem 0', letterSpacing: '-0.02em' }}>Lifestyle Medicine Assessment</h1>
           <p style={{ fontSize: '1.1rem', opacity: 0.95, maxWidth: '600px', margin: '0 auto', fontWeight: '400' }}>Discover your wellness baseline and get personalized recommendations</p>
