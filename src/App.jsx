@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-console.log('API Key loaded:', import.meta.env.VITE_GEMINI_API_KEY ? 'Yes' : 'No');
-console.log('API Key starts with:', import.meta.env.VITE_GEMINI_API_KEY?.substring(0, 10));
 const LifestyleMedicineAssessment = () => {
   const [currentStep, setCurrentStep] = useState('consent');
   const [answers, setAnswers] = useState({});
@@ -104,35 +102,32 @@ const LifestyleMedicineAssessment = () => {
     return scoreByCategory;
   };
 
- const generateRecommendations = async (s) => {
-  setLoading(true);
-  try {
-    const KEY = String(import.meta.env.VITE_GEMINI_API_KEY || '').trim();
-    if (!KEY) {
-      throw new Error('No API key');
+  const generateRecommendations = async (s) => {
+    setLoading(true);
+    try {
+      const KEY = import.meta.env.VITE_GEMINI_API_KEY?.trim();
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${KEY}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: "Provide 5 short wellness tips for these wellness scores: " + JSON.stringify(s) + ". Return ONLY a JSON array: [{\"category\": \"string\", \"title\": \"string\", \"action\": \"string\", \"why\": \"string\"}]" }] }]
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message || `HTTP Error ${res.status}`);
+      const rawText = data.candidates[0].content.parts[0].text;
+      const cleaned = rawText.replace(/```json|json|```/gi, "").trim();
+      setRecommendations(JSON.parse(cleaned));
+    } catch (e) {
+      console.error("API Error:", e);
+      setRecommendations([
+        { category: "general", title: "Start Small", action: "Pick one healthy habit to focus on this week.", why: "Small, consistent changes lead to lasting results." },
+        { category: "general", title: "Track Progress", action: "Retake this assessment in 4 weeks.", why: "Monitoring helps maintain motivation." }
+      ]);
     }
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${KEY}`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: "Provide 5 short wellness tips for these wellness scores: " + JSON.stringify(s) + ". Return ONLY a JSON array: [{\"category\": \"string\", \"title\": \"string\", \"action\": \"string\", \"why\": \"string\"}]" }] }]
-      })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || `HTTP Error ${res.status}`);
-    const rawText = data.candidates[0].content.parts[0].text;
-    const cleaned = rawText.replace(/```json|json|```/gi, "").trim();
-    setRecommendations(JSON.parse(cleaned));
-  } catch (e) {
-    console.error("API Error:", e);
-    setRecommendations([
-      { category: "general", title: "Start Small", action: "Pick one healthy habit to focus on this week.", why: "Small, consistent changes lead to lasting results." },
-      { category: "general", title: "Track Progress", action: "Retake this assessment in 4 weeks.", why: "Monitoring helps maintain motivation." }
-    ]);
-  }
-  setLoading(false);
-};
+    setLoading(false);
+  };
 
   const handleAnswer = (questionId, value) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
@@ -197,7 +192,7 @@ const LifestyleMedicineAssessment = () => {
   const progress = currentStep === 'results' ? 100 : currentStep === 'consent' ? 0 : ((currentStepIndex + 1) / categorySteps.length) * 100;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontFamily: '"Epilogue", system-ui, sans-serif', padding: '2rem 1rem' }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontFamily: '"Epilogue", system-ui, sans-serif', padding: '2rem 1rem', display: 'flex', flexDirection: 'column' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
         * { box-sizing: border-box; }
@@ -466,7 +461,44 @@ const LifestyleMedicineAssessment = () => {
               <div style={{ background: '#f0f4ff', borderRadius: '16px', padding: '2rem', marginTop: '2rem', border: '2px solid #667eea' }}>
                 <h3 style={{ fontSize: '1.3rem', fontWeight: '700', marginBottom: '1rem', color: '#1a1a2e' }}>Was this assessment helpful?</h3>
                 <p style={{ marginBottom: '1.5rem', color: '#666' }}>Your feedback helps us improve the tool!</p>
-                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                    <button 
+                      key={num}
+                      onClick={async () => {
+                        try {
+                          await fetch('https://api.sheetbest.com/sheets/a99766d4-2760-4aaa-9610-31c98d7c09bf', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              Timestamp: new Date().toLocaleString(),
+                              Type: 'Feedback',
+                              'Feedback Rating': num
+                            })
+                          });
+                          alert(`Thank you for rating us ${num}/10!`);
+                        } catch (e) {
+                          console.log('Failed to track feedback');
+                        }
+                      }}
+                      style={{ 
+                        padding: '0.75rem 1rem', 
+                        background: num <= 4 ? '#f44336' : num <= 7 ? '#ff9800' : '#4caf50',
+                        color: 'white', 
+                        border: 'none', 
+                        borderRadius: '8px', 
+                        fontSize: '1rem', 
+                        fontWeight: '700', 
+                        cursor: 'pointer',
+                        minWidth: '50px',
+                        transition: 'transform 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.transform = 'scale(1.1)'}
+                      onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                    >
+                      {num}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
